@@ -16,20 +16,26 @@ class robot():
 
         self.ctrl_c =False
 
-        self.rate = rospy.Rate(5)
+        self.rate = rospy.Rate(1)
         rospy.on_shutdown(self.shutdownhook)
     def scan_callback(self,msg):
        # print(len(msg.ranges))
-        self.a = msg.ranges[180]
-        self.b = msg.ranges[360]
-        self.c = msg.ranges[540]
-        self.d = msg.ranges[1]
+        self.a = min(msg.ranges[180],5)
+        self.b = min(msg.ranges[360],5)
+        self.c = min(msg.ranges[540],5)
+        self.d = min(msg.ranges[1],5)
+
+
+        print("a= " + str(self.a) + " b= " + str(self.b) + " c= " + str(self.c) + " d " + str(self.d))
+      #  self.rate.sleep()
+        time.sleep(1)
+
 
     def read_laser(self):
         while not self.ctrl_c:
             if self.a>5:
                 self.a =5
-            if self.b>5:
+            if self.b>5:    
                 self.b =5
             if self.c>5:
                 self.c =5
@@ -44,15 +50,28 @@ class robot():
         self.ctrl_c = True
 
     def avoid_wall(self):
-        maxi = max(self.a,self.b,self.c,self.d)
-        if self.a == maxi:
-            if __name__== '__main__':
-                rospy.init_node("calibrate left right")
-                rospy.loginfo("node has been started")
+        while not self.ctrl_c:
+            maxi = max(self.a,self.b,self.c,self.d)
+            print(maxi)
+            print("a")
+            time.sleep(1)
 
-                rate = rospy.Rate(10)
+            #self.rate.sleep()
 
-                pub = rospy.Publisher("/cmd_vel",Twist,queue_size =10)
+           # rospy.init_node("calibrate_left_right")
+            
+
+
+
+
+        """if self.a == maxi:
+            
+            rospy.init_node("calibrate_left_right")
+            rospy.loginfo("node has been started")
+
+            rate = rospy.Rate(10)
+
+            pub = rospy.Publisher("/cmd_vel",Twist,queue_size =10)
 
             while not rospy.is_shutdown():
                     #publish cmnd velo
@@ -65,13 +84,13 @@ class robot():
                 time.sleep(3.1)
 
         elif self.b == maxi:
-            if __name__== '__main__':
-                rospy.init_node("calibrate left right")
-                rospy.loginfo("node has been started")
+            
+            rospy.init_node("calibrate_left_right")
+            rospy.loginfo("node has been started")
 
-                rate = rospy.Rate(10)
+            rate = rospy.Rate(10)
 
-                pub = rospy.Publisher("/cmd_vel",Twist,queue_size =10)
+            pub = rospy.Publisher("/cmd_vel",Twist,queue_size =10)
 
             while not rospy.is_shutdown():
                     #publish cmnd velo
@@ -84,13 +103,13 @@ class robot():
                 time.sleep(3.1)
 
         elif self.c == maxi:
-            if __name__== '__main__':
-                rospy.init_node("calibrate left right")
-                rospy.loginfo("node has been started")
+            
+            rospy.init_node("calibrate_left_right")
+            rospy.loginfo("node has been started")
 
-                rate = rospy.Rate(10)
+            rate = rospy.Rate(10)
 
-                pub = rospy.Publisher("/cmd_vel",Twist,queue_size =10)
+            pub = rospy.Publisher("/cmd_vel",Twist,queue_size =10)
 
             while not rospy.is_shutdown():
                     #publish cmnd velo
@@ -103,13 +122,13 @@ class robot():
                 time.sleep(3.1)
 
         else:
-            if __name__== '__main__':
-                rospy.init_node("calibrate left right")
-                rospy.loginfo("node has been started")
+            
+            rospy.init_node("calibrate_left_right")
+            rospy.loginfo("node has been started")
 
-                rate = rospy.Rate(10)
+            rate = rospy.Rate(10)
 
-                pub = rospy.Publisher("/cmd_vel",Twist,queue_size =10)
+            pub = rospy.Publisher("/cmd_vel",Twist,queue_size =10)
 
             while not rospy.is_shutdown():
                     #publish cmnd velo
@@ -119,18 +138,33 @@ class robot():
                 msg.linear.x = 1.0
                 msg.angular.z = 0.0
                 pub.publish(msg)
-                time.sleep(3.1)
+                time.sleep(3.1)"""
 
 
 
             
 
-if __name__ =='__main__':
+if __name__ =='__main__':    
+    
     rospy.init_node('rosbot_test',anonymous=True)
     robot_object = robot()
     try:
-        robot_object.read_laser()
+       # robot_object.read_laser()
         robot_object.avoid_wall()
+        rospy.loginfo("node has been started")
+        pub = rospy.Publisher("/cmd_vel",Twist,queue_size =10)
+        rate = rospy.Rate(1)
+
+        while not rospy.is_shutdown():
+            msg = Twist()
+            msg.linear.x = 0.0
+            msg.angular.z = 1.0
+            
+            #time.sleep(3.1)
+            pub.publish(msg)
+            rate.sleep()
+
+
     except rospy.ROSInterruptException:
         pass    
 
